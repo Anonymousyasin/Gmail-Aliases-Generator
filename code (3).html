@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yasin Alias Generator</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts for the cyberpunk theme -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Inter:wght@400;500;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Global Styles & Variables --- */
+        :root {
+            --bg-color: #0d1117;
+            --primary-neon: #00f5c3; /* A vibrant cyan/mint */
+            --secondary-neon: #be00f5; /* A striking magenta/purple */
+            --danger-color: #ff4757; /* For error/delete messages */
+            --text-color: #c5cde2;
+            --text-darker: #7b88a1;
+            --card-bg: rgba(20, 28, 58, 0.4);
+            --card-border-color: rgba(0, 245, 195, 0.2);
+            --card-border-hover: rgba(0, 245, 195, 0.5);
+            --glow-shadow: rgba(0, 245, 195, 0.15);
+            --glass-blur: backdrop-filter: blur(12px);
+            --transition-speed: 0.3s;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                radial-gradient(circle at 15% 25%, var(--primary-neon), transparent 25%),
+                radial-gradient(circle at 85% 75%, var(--secondary-neon), transparent 25%);
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            filter: blur(100px);
+            animation: background-pan 30s infinite alternate;
+        }
+
+        @keyframes background-pan {
+            from { background-position: 0% 0%; }
+            to { background-position: 100% 100%; }
+        }
+
+        header {
+            padding: 2rem;
+            background: transparent;
+            border-bottom: 1px solid var(--card-border-color);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Orbitron', 'Courier New', monospace;
+            font-size: 2rem;
+            color: #fff;
+            margin: 0;
+            letter-spacing: 3px;
+            text-align: center;
+            text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--primary-neon), 0 0 30px var(--primary-neon), 0 0 40px var(--primary-neon);
+        }
+
+        h2, h3 {
+            margin-top: 0;
+            color: #fff;
+            padding-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--primary-neon);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        h3 { font-size: 1.2rem; }
+
+        main { padding: 2rem 1rem; position: relative; z-index: 5; }
+
+        .container { max-width: 1200px; margin: 0 auto; display: grid; gap: 1.5rem; }
+
+        .card {
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid var(--card-border-color);
+            background: var(--card-bg);
+            box-shadow: 0 0 25px var(--glow-shadow);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            transition: transform var(--transition-speed) ease-out, border-color var(--transition-speed) ease-out, box-shadow var(--transition-speed) ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.01);
+            border-color: var(--card-border-hover);
+            box-shadow: 0 0 40px var(--glow-shadow);
+        }
+        
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        label { display: block; margin-bottom: 0.75rem; font-weight: 500; color: var(--text-color); }
+
+        input[type="email"], input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--card-border-color);
+            font-size: 1rem;
+            box-sizing: border-box;
+            background-color: rgba(13, 17, 23, 0.7);
+            color: var(--text-color);
+            transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+        }
+        
+        select { appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23c5cde2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 1rem center; background-size: .65em auto; }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-neon);
+            box-shadow: 0 0 0 3px rgba(0, 245, 195, 0.3);
+        }
+
+        input[type="range"] { width: 100%; accent-color: var(--primary-neon); }
+
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .checkbox-container { display: flex; align-items: center; gap: 0.5rem; }
+        .checkbox-container input { width: auto; }
+
+        #password-strength-bar-container { background-color: rgba(13, 17, 23, 0.7); border-radius: 5px; padding: 3px; }
+        #password-strength-bar { height: 10px; border-radius: 3px; width: 0%; transition: width 0.3s, background-color 0.3s; }
+        #password-strength-text { font-size: 0.8rem; margin-top: 0.5rem; text-align: right; color: var(--text-darker); }
+
+        .btn { padding: 0.8rem 1.5rem; border: 1px solid transparent; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all var(--transition-speed) ease-out; display: inline-flex; align-items: center; gap: 0.75rem; letter-spacing: 0.5px; }
+        .btn:hover { transform: translateY(-3px); }
+
+        .primary-btn { background-color: var(--primary-neon); color: #000; width: 100%; justify-content: center; box-shadow: 0 0 15px rgba(0, 245, 195, 0.4); }
+        .primary-btn:hover { background-color: #fff; box-shadow: 0 0 25px rgba(0, 245, 195, 0.7); }
+        
+        .danger-btn { background-color: transparent; border: 1px solid var(--danger-color); color: var(--danger-color); }
+        .danger-btn:hover { background-color: var(--danger-color); color: #fff; box-shadow: 0 0 20px rgba(255, 71, 87, 0.5); }
+
+        .icon-btn { background: none; border: none; cursor: pointer; padding: 0.5rem; font-size: 1.2rem; border-radius: 50%; color: var(--text-darker); width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; transition: all var(--transition-speed); }
+        .icon-btn:hover { color: #fff; background-color: rgba(255, 255, 255, 0.1); }
+
+        .generator-container { display: grid; grid-template-columns: 1fr; max-width: 600px; margin: 0 auto; }
+        .alias-list-card .alias-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+        .alias-list-container { max-height: 500px; overflow-y: auto; padding-right: 1rem; }
+        .empty-message { text-align: center; padding: 2rem; color: var(--text-darker); }
+        
+        .alias-item { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem 1.5rem; margin-bottom: 1rem; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid transparent; border-left: 3px solid var(--primary-neon); transition: background-color var(--transition-speed), border-color var(--transition-speed); }
+        .alias-item:hover { background-color: rgba(0, 245, 195, 0.05); border-color: var(--card-border-color); }
+        .alias-details { display: flex; flex-direction: column; gap: 0.5rem; flex-grow: 1; word-break: break-all; }
+        .alias-info, .password-info, .label-info { display: flex; align-items: center; gap: 0.75rem; }
+        .alias-info span, .password-info span, .label-info span { font-family: 'Fira Code', 'Courier New', monospace; color: #fff; font-size: 1rem; }
+        .alias-meta { font-size: 0.8rem; color: var(--text-darker); }
+        .alias-item-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+        .label-info input { font-size: 1rem; padding: 0.2rem 0.5rem; }
+
+        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 1rem 2rem; border-radius: 8px; color: #000; font-weight: 600; z-index: 1000; transition: bottom 0.5s ease-in-out; background-color: var(--primary-neon); box-shadow: 0 0 20px var(--primary-neon); }
+        #toast.show { bottom: 30px; }
+        
+        @media (max-width: 900px) {
+            .settings-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            h1 { font-size: 1.5rem; letter-spacing: 2px; }
+            .alias-list-card .alias-header, .alias-item { flex-direction: column; align-items: stretch; }
+            .alias-item { align-items: flex-start; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <h1>🎯 YASIN ALIAS GENERATOR</h1>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Settings Card -->
+            <div class="card settings-card">
+                <h2><i class="fas fa-cogs"></i> Settings</h2>
+                <div class="settings-grid">
+                    <div>
+                        <div class="form-group">
+                            <label for="base-email">Your Base Gmail Address</label>
+                            <input type="email" id="base-email" placeholder="yourname@gmail.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="alias-separator">Alias Separator</label>
+                            <select id="alias-separator">
+                                <option value="+">+</option>
+                                <option value=".">.</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="password-length">Password Length: <span id="password-length-value">16</span></label>
+                            <input type="range" id="password-length" min="8" max="32" value="16">
+                        </div>
+                        <div class="form-group">
+                            <label>Password Includes</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-container"><input type="checkbox" id="include-uppercase" checked> <label for="include-uppercase">A-Z</label></div>
+                                <div class="checkbox-container"><input type="checkbox" id="include-lowercase" checked> <label for="include-lowercase">a-z</label></div>
+                                <div class="checkbox-container"><input type="checkbox" id="include-numbers" checked> <label for="include-numbers">0-9</label></div>
+                                <div class="checkbox-container"><input type="checkbox" id="include-symbols" checked> <label for="include-symbols">!@#$</label></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Password Strength</label>
+                            <div id="password-strength-bar-container">
+                                <div id="password-strength-bar"></div>
+                            </div>
+                            <div id="password-strength-text"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generator Form (Single Mode Only) -->
+            <div class="generator-container">
+                <div class="card">
+                    <h3><i class="fas fa-user-plus"></i> Generate Your Alias</h3>
+                    <div class="form-group">
+                        <label for="single-label">Alias Label (e.g., "facebook", "newsletter")</label>
+                        <input type="text" id="single-label" placeholder="Enter a service name...">
+                    </div>
+                    <button id="generate-single-btn" class="btn primary-btn"><i class="fas fa-bolt"></i> Generate Alias</button>
+                </div>
+            </div>
+
+            <!-- Alias Display Area -->
+            <div class="card alias-list-card">
+                <div class="alias-header">
+                    <h2><i class="fas fa-list-alt"></i> Your Generated Alias</h2>
+                    <button id="delete-all-btn" class="btn danger-btn"><i class="fas fa-dumpster-fire"></i> Delete All Data</button>
+                </div>
+                <div id="alias-list-container">
+                    <p class="empty-message">No alias generated yet. Use the form above to get started!</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM Element References ---
+        const baseEmailInput = document.getElementById('base-email');
+        const aliasSeparator = document.getElementById('alias-separator');
+        const passwordLengthSlider = document.getElementById('password-length');
+        const passwordLengthValue = document.getElementById('password-length-value');
+        const includeUppercase = document.getElementById('include-uppercase');
+        const includeLowercase = document.getElementById('include-lowercase');
+        const includeNumbers = document.getElementById('include-numbers');
+        const includeSymbols = document.getElementById('include-symbols');
+        const strengthBar = document.getElementById('password-strength-bar');
+        const strengthText = document.getElementById('password-strength-text');
+        const singleLabelInput = document.getElementById('single-label');
+        const generateSingleBtn = document.getElementById('generate-single-btn');
+        const aliasListContainer = document.getElementById('alias-list-container');
+        const deleteAllBtn = document.getElementById('delete-all-btn');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+
+        // This array will now only hold 0 or 1 alias object.
+        let aliases = [];
+
+        // --- Core Functions ---
+        const generatePassword = (length) => {
+            const charsets = {
+                uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                lowercase: 'abcdefghijklmnopqrstuvwxyz',
+                numbers: '0123456789',
+                symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+            };
+            let charset = '';
+            if (includeUppercase.checked) charset += charsets.uppercase;
+            if (includeLowercase.checked) charset += charsets.lowercase;
+            if (includeNumbers.checked) charset += charsets.numbers;
+            if (includeSymbols.checked) charset += charsets.symbols;
+
+            if (charset.length === 0) {
+                showToast('Please select at least one character set for the password.', 'error');
+                return null;
+            }
+
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * charset.length);
+                password += charset[randomIndex];
+            }
+            return password;
+        };
+
+        const createAliasObject = (baseEmail, label) => {
+            if (!baseEmail || !baseEmail.includes('@') || !baseEmail.includes('.')) {
+                showToast('Please enter a valid base email address.', 'error');
+                return null;
+            }
+            if (!label) {
+                showToast('Please enter an alias label.', 'error');
+                return null;
+            }
+            const [name, domain] = baseEmail.split('@');
+            const separator = aliasSeparator.value;
+            const baseName = separator === '.' ? name.replace(/\./g, '') : name;
+            const cleanLabel = label.replace(/[^a-zA-Z0-9.-_]/g, '');
+            const newAlias = `${baseName}${separator}${cleanLabel}@${domain}`;
+            const newPassword = generatePassword(parseInt(passwordLengthSlider.value, 10));
+
+            if (newPassword === null) return null;
+            
+            return {
+                id: Date.now() + Math.random(),
+                alias: newAlias,
+                password: newPassword,
+                label: label,
+                createdAt: new Date().toISOString()
+            };
+        };
+
+        const updatePasswordStrength = () => {
+            const length = parseInt(passwordLengthSlider.value, 10);
+            let score = 0;
+            if (includeUppercase.checked) score++;
+            if (includeLowercase.checked) score++;
+            if (includeNumbers.checked) score++;
+            if (includeSymbols.checked) score++;
+            
+            let strength = (length / 32) * (score / 4) * 100;
+            
+            let color = '#ff4757'; // Weak (red)
+            let text = 'Weak';
+            if (strength > 75) { color = '#00f5c3'; text = 'Very Strong'; }
+            else if (strength > 50) { color = '#2ed573'; text = 'Strong'; }
+            else if (strength > 25) { color = '#ffa502'; text = 'Medium'; }
+
+            strengthBar.style.width = `${Math.min(strength, 100)}%`;
+            strengthBar.style.backgroundColor = color;
+            strengthText.textContent = text;
+        };
+
+        // --- UI & Rendering ---
+        const renderAliases = (aliasesToRender) => {
+            aliasListContainer.innerHTML = '';
+            if (aliasesToRender.length === 0) {
+                aliasListContainer.innerHTML = `<p class="empty-message">No alias generated yet. Use the form above to get started!</p>`;
+                return;
+            }
+
+            aliasesToRender.forEach(item => {
+                const date = new Date(item.createdAt).toLocaleString();
+                const aliasElement = document.createElement('div');
+                aliasElement.className = 'alias-item';
+                aliasElement.dataset.id = item.id;
+
+                aliasElement.innerHTML = `
+                    <div class="alias-details">
+                        <div class="alias-info"><i class="fas fa-envelope"></i> <span>${item.alias}</span></div>
+                        <div class="password-info"><i class="fas fa-lock"></i> <span>${item.password}</span></div>
+                        <div class="label-info" data-id="${item.id}">
+                            <i class="fas fa-tag"></i> <span>${item.label}</span>
+                        </div>
+                        <div class="alias-meta">📅 Created: ${date}</div>
+                    </div>
+                    <div class="alias-item-actions">
+                        <button class="icon-btn copy-alias-btn" title="Copy Alias"><i class="fas fa-copy"></i></button>
+                        <button class="icon-btn copy-pass-btn" title="Copy Password"><i class="fas fa-key"></i></button>
+                        <button class="icon-btn delete-btn" title="Delete Alias"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `;
+                aliasListContainer.appendChild(aliasElement);
+            });
+        };
+        
+        const showToast = (message, type = 'success') => {
+            toastMessage.textContent = message;
+            toast.className = 'toast show';
+            toast.style.backgroundColor = type === 'error' ? 'var(--danger-color)' : 'var(--primary-neon)';
+            setTimeout(() => { toast.className = 'toast'; }, 3000);
+        };
+
+        const copyToClipboard = (text, successMessage) => {
+            navigator.clipboard.writeText(text).then(() => showToast(successMessage), () => showToast('Failed to copy!', 'error'));
+        };
+
+        // --- Data Management ---
+        const saveAliasesToLocal = () => {
+            localStorage.setItem('yasinAlias', JSON.stringify(aliases)); // Note: singular 'yasinAlias' now
+            localStorage.setItem('yasinSettings', JSON.stringify({
+                baseEmail: baseEmailInput.value,
+                separator: aliasSeparator.value
+            }));
+        };
+
+        const loadAliasesFromLocal = () => {
+            const storedAlias = localStorage.getItem('yasinAlias');
+            const storedSettings = localStorage.getItem('yasinSettings');
+            if (storedAlias) aliases = JSON.parse(storedAlias);
+            if (storedSettings) {
+                const settings = JSON.parse(storedSettings);
+                baseEmailInput.value = settings.baseEmail || '';
+                aliasSeparator.value = settings.separator || '+';
+            }
+            renderAliases(aliases);
+            updatePasswordStrength();
+        };
+
+        // --- Event Handlers ---
+        const handleSingleGenerate = () => {
+            const baseEmail = baseEmailInput.value.trim();
+            let label = singleLabelInput.value.trim();
+            const newAlias = createAliasObject(baseEmail, label);
+            
+            if (newAlias) {
+                // *** CRITICAL CHANGE: Replace the entire array with the new alias ***
+                aliases = [newAlias];
+                
+                saveAliasesToLocal();
+                renderAliases(aliases);
+                showToast('Alias generated successfully!');
+            }
+        };
+
+        const handleDeleteAll = () => {
+            if (confirm('Are you sure you want to delete all stored data? This action cannot be undone.')) {
+                aliases = [];
+                saveAliasesToLocal();
+                renderAliases(aliases);
+                showToast('All data has been deleted.');
+            }
+        };
+
+        const handleAliasListClick = (e) => {
+            const target = e.target.closest('button.icon-btn');
+            if (!target) return;
+
+            if (target.classList.contains('delete-btn')) {
+                if (confirm('Are you sure you want to delete this alias?')) {
+                    aliases = []; // Simply clear the array
+                    saveAliasesToLocal();
+                    renderAliases(aliases);
+                    showToast('Alias deleted.');
+                }
+            } else {
+                 const aliasItemElement = target.closest('.alias-item');
+                 const aliasId = parseFloat(aliasItemElement.dataset.id);
+                 const aliasData = aliases.find(a => a.id === aliasId);
+                 if (!aliasData) return;
+
+                 if (target.classList.contains('copy-alias-btn')) copyToClipboard(aliasData.alias, 'Alias copied!');
+                 else if (target.classList.contains('copy-pass-btn')) copyToClipboard(aliasData.password, 'Password copied!');
+            }
+        };
+        
+        // --- Event Listeners ---
+        generateSingleBtn.addEventListener('click', handleSingleGenerate);
+        deleteAllBtn.addEventListener('click', handleDeleteAll);
+        aliasListContainer.addEventListener('click', handleAliasListClick);
+        [passwordLengthSlider, includeUppercase, includeLowercase, includeNumbers, includeSymbols].forEach(el => {
+            el.addEventListener('input', updatePasswordStrength);
+        });
+        passwordLengthSlider.addEventListener('input', (e) => passwordLengthValue.textContent = e.target.value);
+        baseEmailInput.addEventListener('change', saveAliasesToLocal);
+        aliasSeparator.addEventListener('change', saveAliasesToLocal);
+
+        // --- Initial Load ---
+        loadAliasesFromLocal();
+    });
+    </script>
+</body>
+</html>
