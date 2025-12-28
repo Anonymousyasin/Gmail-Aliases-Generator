@@ -1,1 +1,1 @@
-# Gmail-Aliases-Generator
+# Gmail-Aliases-Generato
